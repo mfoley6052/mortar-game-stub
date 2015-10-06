@@ -54,16 +54,22 @@ window.onload = function() {
     var mainContainer = document.querySelector('main');
     var canvas = document.createElement("canvas");
     var ctx = canvas.getContext("2d");
-    canvas.width = 320;
-    canvas.height = 240;
+    canvas.width = 640; //want to make to device screen size
+    canvas.height = 480;
     mainContainer.appendChild(canvas);
 
     // The player's state
     var player = {
         x: 0,
         y: 0,
+		vX: 0,
+		vY: 0,
+		mass: 5,
         sizeX: 30,
-        sizeY: 30
+        sizeY: 30,
+		str: 3,
+		standing: 0
+		
     };
 
     // Don't run the game when the tab isn't visible
@@ -88,7 +94,7 @@ window.onload = function() {
     // Reset game to original state
     function reset() {
         player.x = 0;
-        player.y = 0;
+        player.y = 400;
     }
 
     // Pause and unpause
@@ -108,16 +114,25 @@ window.onload = function() {
     // from js/input.js right before app.js
     function update(dt) {
         // Speed in pixels per second
-        var playerSpeed = 100;
-
+        var playerSpeed = 20;
+		var a = -9.81;
+		
+		
+		
         if(GameInput.isDown('DOWN')) {
             // dt is the number of seconds passed, so multiplying by
             // the speed gives you the number of pixels to move
-            player.y += playerSpeed * dt;
+            //player.y += playerSpeed * dt;
+			
         }
 
         if(GameInput.isDown('UP')) {
-            player.y -= playerSpeed * dt;
+			
+			var fG=player.mass*a;
+			var fJ = player.str*(1+playerSpeed);
+			var fNet = fG + fJ;
+            player.vY += fNet* dt;
+			player.Y = player.Y + player.vY * dt;
         }
 
         if(GameInput.isDown('LEFT')) {
@@ -138,8 +153,13 @@ window.onload = function() {
         ctx.fillStyle = 'black';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        ctx.fillStyle = 'green';
+        ctx.fillStyle = 'blue';
         ctx.fillRect(player.x, player.y, player.sizeX, player.sizeY);
+		
+		ctx.fillStyle = 'green';
+		ctx.fillRec(0,400,500,30);
+			
+			
     }
 
     // The main game loop
